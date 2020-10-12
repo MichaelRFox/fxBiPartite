@@ -22,8 +22,9 @@ export function sortKeys (data) {
 
 function sortAlpha (data) {
 
-    let sourceKeys = [... new Set(data.reduce((a,b) => {return a.concat(keyPrimary(b))}, []))];
-    let targetKeys = [... new Set(data.reduce((a,b) => {return a.concat(keySecondary(b))}, []))];
+    // let sourceKeys = [... new Set(data.reduce((a,b) => {return a.concat(keyPrimary(b))}, []))];
+    // let targetKeys = [... new Set(data.reduce((a,b) => {return a.concat(keySecondary(b))}, []))];
+    // const {sourceKeys, targetKeys} = getKeys(data);
     glb.sourceKeys = sourceKeys.sort();
     glb.targetKeys = targetKeys.sort();
     

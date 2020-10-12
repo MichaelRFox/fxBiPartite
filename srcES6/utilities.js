@@ -96,6 +96,7 @@ export function fill (d) {
     
     const key = d.primary == undefined ? d.key : d.primary;
     let index = glb.sourceKeys.indexOf(key);
+    index = index % (glb.fillColors.length); //wrao around
     return glb.fillColors[index];
 }
 

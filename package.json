@@ -14,7 +14,8 @@
     "babelSrc": "babel --no-babelrc srcES6 --out-dir src --config-file ./.babelrcSRC",
     "buildDist": "rollup -c rollup.config.js && npm run terserDist && npm run terserDistMin",
     "terserDistMin": "terser ./dist/fxBiPartite.js -o ./dist/fxBiPartite.min.js --config-file terser.config.dist",
-    "terserDist": "terser ./dist/fxBiPartite.js -o ./dist/fxBiPartite.js --config-file terser.config.src"
+    "terserDist": "terser ./dist/fxBiPartite.js -o ./dist/fxBiPartite.js --config-file terser.config.src",
+    "test": "babel-tape-runner ./test/**/*.js  | tap-spec"
   },
   "repository": {
     "type": "git",
@@ -40,8 +41,11 @@
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@types/babel__core": "^7.1.10",
+    "babel-tape-runner": "^3.0.0",
     "core-js": "^3.6.5",
     "rollup": "^2.28.2",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.0.1",
     "terser": "^5.3.4"
   },
   "dependencies": {

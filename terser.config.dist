@@ -17,7 +17,6 @@
         "directives" : true,
         "drop_console" : true,
         "drop_debugger" : true,
-        "ecma" : 5,
         "evaluate" : true,
         "expression" : false,
         "global_defs" : {},
@@ -27,9 +26,7 @@
         "if_return" : true,
         "inline" : true,
         "join_vars" : true,
-        "keep_classnames" : false,
         "keep_fargs" : false,
-        "keep_fnames" : false,
         "keep_infinity" : false,
         "loops" : true,
         "module": false,
@@ -42,7 +39,6 @@
         "sequences" : true,
         "side_effects" : true,
         "switches" : true,
-        "toplevel" : false,
         "top_retain" : null,
         "typeofs" : false,
         "unsafe" : false,
@@ -59,19 +55,7 @@
     },
     "mangle": {
         "eval" : false,
-        "keep_classnames" : false,
-        "keep_fnames" : false,
-        "module" : false,
-        "toplevel" : false,
-        "safari10" : false,
-        "properties": {
-            "builtins" : false,
-            "debug" : false,
-            "keep_quoted" : false,
-            "regex" : null,
-            "reserved" : ["biPartite"],
-            "undeclared" : false
-        }
+        "properties": false
     },
     "format": {
         "ascii_only": false,
@@ -91,7 +75,6 @@
         "preserve_annotations": false,
         "safari10": false,
         "semicolons": true,
-        "shebang": true,
         "webkit": false,
         "wrap_iife": false,
         "wrap_func_args": true
