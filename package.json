@@ -1,6 +1,6 @@
 {
-  "name": "fxBipartite",
-  "version": "1.0.0",
+  "name": "fxbipartite",
+  "version": "1.0.1",
   "description": "Interactive bipartite graph layout",
   "main": "dist/fxBipartite.js",
   "module": "src/index.js",

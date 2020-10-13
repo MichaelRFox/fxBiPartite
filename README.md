@@ -51,6 +51,10 @@ fxBipartite uses d3.js for selections and transitions. Note that we did not used
 
 [:house: top](#top)
 
+### <a id='demos'>Demonstrations</a>
+
+- [fxBipartite graph demo](https://michaelrfox.github.io/demos/fxBiPartiteDemos/)
+
 ### <a id="conventions">Conventions</a>
 fxBiPartite uses method chaining and only requires two options to be set for use with the defaults (data and container).
 
