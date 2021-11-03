@@ -1,4 +1,19 @@
-export function getFont(rule) {
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+/**
+ * @module font
+ * @desc Provides functions to search for a font style for a particular CSS rule.
+ */
+
+/**
+ * @function getFont
+ * @desc Searches the document style sheet(s) to see if there is a font specified for the input rule.
+ * @param {string} rule The CSS rule to be searched...usually '.biPartitePercentage'.
+ * @returns {string} If the rule search succeeds a CSS-formatted font style, otherwise the document default.
+ */
+function getFont(rule) {
     
     rule = rule.toLowerCase();
 
@@ -21,18 +36,16 @@ export function getFont(rule) {
                 if (selectorText[j].indexOf(rule) != -1) {
                     if (rules[i].style['font'] != '') { // detect shorthand declaration
                         return rules[i].style['font'];
-                    };
-                    fontStyle = rules[i].style['font-style'] == '' ? fontStyle : rules[i].style['font-style'];
+                    }                    fontStyle = rules[i].style['font-style'] == '' ? fontStyle : rules[i].style['font-style'];
                     fontVariant = rules[i].style['font-variant'] == '' ? fontVariant : rules[i].style['font-variant'];
                     fontWeight = rules[i].style['font-weight'] == '' ? fontWeight : rules[i].style['font-weight'];
                     fontSize = rules[i].style['font-size'] == '' ? fontSize : rules[i].style['font-size'];
                     lineHeight = rules[i].style['line-height'] == '' ? lineHeight : rules[i].style['line-height'];
                     fontFamily = rules[i].style['font-family'] == '' ? fontFamily : rules[i].style['font-family'];
                     //break;
-                };
-            };
-        };
-    });
+                }            }        }    });
 
     return `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}/${lineHeight} ${fontFamily}`;
 }
+
+exports.getFont = getFont;

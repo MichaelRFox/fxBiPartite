@@ -1,9 +1,13 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var globals = require('./globals.js');
+
 /**
  * @module container
  * @desc Provides the event listener for the container.
  */
-
-import {default as glb} from './globals';
 
 /**
  * Holds the last timestamp
@@ -37,17 +41,9 @@ let height;
  * @function startListener
  * @desc called when the container is instantiated to start an animation frame.
  */
-export function startListener () {
+function startListener () {
     active = true;
     window.requestAnimationFrame(containerListener);
-}
-
-/**
- * @function stopListener
- * @desc Stops polling of the container
- */
-export function stopListener () {
-    active = false;
 }
 
 /**
@@ -66,18 +62,17 @@ function containerListener (timeStamp) {
 
     if (elapsed > threshold) {
         start = timeStamp;
-        let newWidth = glb.graph.container().getBoundingClientRect().width;
-        let newHeight = glb.graph.container().getBoundingClientRect().height;
+        let newWidth = globals.graph.container().getBoundingClientRect().width;
+        let newHeight = globals.graph.container().getBoundingClientRect().height;
         width = width == undefined ? newWidth : width;
         height = height == undefined ? newHeight : height;
         if (width != newWidth || height != newHeight) {
             width = newWidth;
             height = newHeight;
-            glb.refresh = true;
-            glb.graph.update(true);
-        };
-    };
-    if (active == true) requestAnimationFrame(containerListener);
+            globals.refresh = true;
+            globals.graph.update(true);
+        }    }    if (active == true) requestAnimationFrame(containerListener);
     
 }
 
+exports.startListener = startListener;

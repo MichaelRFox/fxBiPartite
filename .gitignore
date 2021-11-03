@@ -1,6 +1,7 @@
 node_modules
-**/*.*OLD
 .npmignore
 *.sublime*
 test/*.json
 test/*.html
+*OLD
+coverage

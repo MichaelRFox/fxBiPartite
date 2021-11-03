@@ -1,11 +1,15 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var bpMap = require('./bpMap.js');
+var globals = require('./globals.js');
+var utilities = require('./utilities.js');
+
 /**
  * @module calculate
  * @desc Performs the calculations to position the main bars, sub bars and edges.
  */
-
-import {bpMap} from './bpMap.js';
-import {default as glb} from './globals.js';
-import {keyPrimary, keySecondary, value} from './utilities.js';
 
 /**
  * @function bars
@@ -19,7 +23,7 @@ import {keyPrimary, keySecondary, value} from './utilities.js';
  * The edges are an array of objects with key/value pairs for the path (string), primary (string), secondary (string),
  * and percent (number) of each edge.
  */
-export function bars (mb) {
+function bars (mb) {
 
     let mainBars = {primary:[], secondary:[]};
     let subBars = {primary:[], secondary:[]};
@@ -50,33 +54,33 @@ export function bars (mb) {
 function calculateMainBars (part, mb) {
     
     let mainBars = [];
-    let orient = glb.graph.orient();
+    let orient = globals.graph.orient();
     let ps = [];
 
-    let mbData = glb.graph.data().slice();
+    let mbData = globals.graph.data().slice();
 
-    let keys = part == 'primary' ? glb.sourceKeys : glb.targetKeys;
+    let keys = part == 'primary' ? globals.sourceKeys : globals.targetKeys;
     
-    let key = part == 'primary' ? keyPrimary : keySecondary;
-    let altKey = part == 'primary' ?  keySecondary: keyPrimary;
+    let key = part == 'primary' ? utilities.keyPrimary : utilities.keySecondary;
+    let altKey = part == 'primary' ?  utilities.keySecondary: utilities.keyPrimary;
     
     keys.forEach(d => {
         let sum =  (mb != undefined && mb.part != part)
-            ? mbData.reduce((a,b) => {return key(b) == d && altKey(b) == mb.key ? a + value(b) : a}, 0)
-            : mbData.reduce((a,b) => {return key(b) == d ? a + value(b) : a}, 0);
+            ? mbData.reduce((a,b) => {return key(b) == d && altKey(b) == mb.key ? a + utilities.value(b) : a}, 0)
+            : mbData.reduce((a,b) => {return key(b) == d ? a + utilities.value(b) : a}, 0);
         ps.push({key: d, value: sum});
     });
     
-    let bars = bpMap (ps, glb.graph.pad(), glb.minHeight, 0, orient == 'vertical' 
-                        ? glb.height 
-                        : glb.width);
+    let bars = bpMap.bpMap (ps, globals.graph.pad(), globals.minHeight, 0, orient == 'vertical' 
+                        ? globals.height 
+                        : globals.width);
 
     ps.forEach ((d,i) => { 
         mainBars.push({
-            x: orient == 'horizontal' ? (bars[i].s + bars[i].e) / 2 : (part == 'primary' ? 0 : glb.width - glb.minWidth / 2),
-            y: orient == 'vertical' ? (bars[i].s + bars[i].e) / 2 : (part == 'primary' ? 0 : glb.height - glb.minWidth / 2),
-            height: orient == 'vertical' ? (bars[i].e - bars[i].s) / 2 : glb.minWidth / 2,
-            width: orient == 'horizontal' ? (bars[i].e - bars[i].s) / 2 : glb.minWidth / 2,
+            x: orient == 'horizontal' ? (bars[i].s + bars[i].e) / 2 : (part == 'primary' ? 0 : globals.width - globals.minWidth / 2),
+            y: orient == 'vertical' ? (bars[i].s + bars[i].e) / 2 : (part == 'primary' ? 0 : globals.height - globals.minWidth / 2),
+            height: orient == 'vertical' ? (bars[i].e - bars[i].s) / 2 : globals.minWidth / 2,
+            width: orient == 'horizontal' ? (bars[i].e - bars[i].s) / 2 : globals.minWidth / 2,
             part: part,
             key: d.key,
             value: d.value,
@@ -102,44 +106,44 @@ function calculateMainBars (part, mb) {
  */
 function calculateSubBars (part, mb, mainBars) {
    
-    let orient = glb.graph.orient();
+    let orient = globals.graph.orient();
     let subBars = [];
     let ps = [];
 
-    let sbData = glb.graph.data().slice();
+    let sbData = globals.graph.data().slice();
     
     let keys = part == 'primary' 
-        ? glb.sourceKeys
-        : glb.targetKeys;
+        ? globals.sourceKeys
+        : globals.targetKeys;
     
-    let key = part == 'primary' ? keyPrimary : keySecondary;
-    let altKey = part == 'primary' ?  keySecondary : keyPrimary;
+    let key = part == 'primary' ? utilities.keyPrimary : utilities.keySecondary;
+    let altKey = part == 'primary' ?  utilities.keySecondary : utilities.keyPrimary;
     
     keys.forEach (d => {
         let values = (mb != undefined && mb.part != part)
             ? sbData.reduce((a,b) => {return key(b) == d 
                 ? altKey(b) == mb.key
-                    ? a.concat({key: altKey(b), value: value(b)})
+                    ? a.concat({key: altKey(b), value: utilities.value(b)})
                     : a.concat({key: altKey(b), value: 0})
                 : a}, [])
             : sbData.reduce((a,b) => {return key(b) == d 
-                ? a.concat({key: altKey(b), value: value(b)}) 
+                ? a.concat({key: altKey(b), value: utilities.value(b)}) 
                 : a}, []);
         ps.push({key: d, values: values});
     });
 
     ps.forEach (d => {
         let g = mainBars[part].filter(e => {return e.key == d.key})[0];
-        let bars = bpMap(d.values, 0, 0,
+        let bars = bpMap.bpMap(d.values, 0, 0,
                 orient == 'vertical' ? g.y - g.height : g.x - g.width,
                 orient == 'vertical' ? g.y + g.height : g.x + g.width);
          
         d.values.forEach((t, i) => { 
             subBars.push({
-                x: orient == 'vertical' ? part == 'primary' ? 0 : glb.width - glb.minWidth / 2 : (bars[i].s + bars[i].e) / 2,
-                y: orient == 'horizontal' ? part == 'primary' ? 0 : glb.height - glb.minWidth / 2 : (bars[i].s + bars[i].e) / 2,
-                height: (orient == 'vertical' ? bars[i].e - bars[i].s : glb.minWidth) / 2,
-                width: (orient == 'horizontal' ? bars[i].e - bars[i].s : glb.minWidth) / 2,
+                x: orient == 'vertical' ? part == 'primary' ? 0 : globals.width - globals.minWidth / 2 : (bars[i].s + bars[i].e) / 2,
+                y: orient == 'horizontal' ? part == 'primary' ? 0 : globals.height - globals.minWidth / 2 : (bars[i].s + bars[i].e) / 2,
+                height: (orient == 'vertical' ? bars[i].e - bars[i].s : globals.minWidth) / 2,
+                width: (orient == 'horizontal' ? bars[i].e - bars[i].s : globals.minWidth) / 2,
                 part: part,
                 primary: part=='primary'? d.key : t.key,
                 secondary: part=='primary'? t.key : d.key,   
@@ -166,7 +170,7 @@ function calculateEdges (subBars) {
     return subBars.primary.map(d => {
         let g = subBars.secondary.filter(e => {return e.index == d.index})[0];
         return { 
-            path:  glb.graph.orient() == 'vertical' 
+            path:  globals.graph.orient() == 'vertical' 
                 ? edgeVert(d.x+d.width,d.y+d.height,g.x-g.width,g.y+g.height,g.x-g.width,g.y-g.height,d.x+d.width,d.y-d.height)
                 : edgeHoriz(d.x-d.width,d.y+d.height,g.x-g.width,g.y-g.height,g.x+g.width,g.y-g.height,d.x+d.width,d.y+d.height),
             primary:d.primary,
@@ -192,14 +196,13 @@ function calculateEdges (subBars) {
  */
 function edgeVert (x1,y1,x2,y2,x3,y3,x4,y4) {
     // if (biPartite.edgeMode() == 'straight') {
-    if (glb.graph.edgeMode() == 'straight') {
+    if (globals.graph.edgeMode() == 'straight') {
         return `M${x1},${y1}L${x2},${y2}L${x3},${y3}L${x4},${y4}z`;
     } else {
         let mx1 = (x1 + x2) / 2;
         let mx3 = (x3 + x4) / 2;
         return `M${x1},${y1}C${mx1},${y1} ${mx1},${y2},${x2},${y2}L${x3},${y3}C${mx3},${y3} ${mx3},${y4},${x4},${y4}z`;
-    };
-}
+    }}
 
 /**
  * @function edgeHoriz
@@ -216,11 +219,12 @@ function edgeVert (x1,y1,x2,y2,x3,y3,x4,y4) {
  */
 function edgeHoriz (x1,y1,x2,y2,x3,y3,x4,y4) {
     // if (biPartite.edgeMode() =='straight') {
-    if (glb.graph.edgeMode() =='straight') {
+    if (globals.graph.edgeMode() =='straight') {
         return `M${x1},${y1}L${x2},${y2}L${x3},${y3}L${x4},${y4}z`;
     } else {
         let my1 = (y1 + y2) / 2;
         let my3 = (y3 + y4) / 2;
         return `M${x1},${y1}C${x1},${my1} ${x2},${my1},${x2},${y2}L${x3},${y3}C${x3},${my3} ${x4},${my3},${x4},${y4}z`;
-    };
-}
+    }}
+
+exports.bars = bars;

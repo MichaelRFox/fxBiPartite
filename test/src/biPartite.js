@@ -1,14 +1,18 @@
-import {update} from './update.js';
-import {default as glb} from './globals.js';
-import {init} from './init.js';
-import {graphSize} from './utilities.js';
-import {bars} from './calculate';
-import {startListener, stopListener} from './container.js';
-import {mouseOver, mouseOut, click} from './mouse.js';
-import {sortKeys} from './sort.js';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var update = require('./update.js');
+var globals = require('./globals.js');
+var init = require('./init.js');
+var utilities = require('./utilities.js');
+var calculate = require('./calculate.js');
+var container = require('./container.js');
+var mouse = require('./mouse.js');
+var sort = require('./sort.js');
 
 /** The biPartite class */
-export class biPartite {
+class biPartite {
 
     #dataLoaded = false;
     #containerDefined = false;
@@ -67,8 +71,7 @@ export class biPartite {
             case 2: 
                 this.data(data);
                 this.container(container);
-        };
-        glb.graph = this;
+        }        globals.graph = this;
     }
 
     /**
@@ -105,15 +108,14 @@ export class biPartite {
      * </script>
      */
     data (data) {
-        if (data == undefined) return glb.data;
+        if (data == undefined) return globals.data;
         if (typeof data != 'Array' || data[0].length != 3 || typeof data[0][0] != 'string' || typeof data[0][1] != 'string' || typeof data[0][3] != 'number') {
             console.error('The data is not properly specified. It must be a two-dimensional array with tuples of [string, string, number] in each row.');
         } else {
-            glb.data = data;
-            glb.refresh = true;
+            globals.data = data;
+            globals.refresh = true;
             this.#dataLoaded = true;
-        };
-        return this;
+        }        return this;
     }
 
     /**
@@ -135,12 +137,12 @@ export class biPartite {
      * myGraph.container(document.getElementById('myDiv'));
      * myGraph.show();
      */
-    container (container) {
-        if (container == undefined) return glb.container;
-        glb.container = container;
-        glb.refresh = true;
+    container (container$1) {
+        if (container$1 == undefined) return globals.container;
+        globals.container = container$1;
+        globals.refresh = true;
         this.#containerDefined = true;
-        startListener();
+        container.startListener();
         return this;
     }
 
@@ -155,12 +157,11 @@ export class biPartite {
      */
     show () {
         if (this.#containerDefined && this.#dataLoaded) {
-            init();
+            init.init();
             this.update();
         } else {
             console.error('Both the data must be loaded and the container be set before the graph can be shown');
-        };
-        return this;
+        }        return this;
     }
 
     /**
@@ -183,16 +184,15 @@ export class biPartite {
      */
      update (noDelay = false) {
         if (this.#containerDefined && this.#dataLoaded) {
-            if (glb.refresh == false) return;
+            if (globals.refresh == false) return;
 
-            [glb.width, glb.height, glb.minWidth, glb.minHeight, glb.LabelOffset] = graphSize();
-            sortKeys(this.data());
-            update(bars(), noDelay);
-            glb.refresh = false;
+            [globals.width, globals.height, globals.minWidth, globals.minHeight, globals.LabelOffset] = utilities.graphSize();
+            sort.sortKeys(this.data());
+            update.update(calculate.bars(), noDelay);
+            globals.refresh = false;
         } else {
             console.error('Both the data must be loaded and the container be set before the graph can be updated');
-        };
-        return this;
+        }        return this;
     }
 
     /**
@@ -209,14 +209,13 @@ export class biPartite {
      *      .show();
      */
     orient (orient){
-        if (orient == undefined) return glb.orient;
+        if (orient == undefined) return globals.orient;
         if (['horizontal', 'vertical'].indexOf(orient) == -1) {
             console.error("The orient parameter should be one of ['horizontal' | 'vertical']");
         } else {
-            glb.orient = orient;
-            glb.refresh = true;
-        };
-        return this;
+            globals.orient = orient;
+            globals.refresh = true;
+        }        return this;
     }
 
     /**
@@ -231,33 +230,31 @@ export class biPartite {
      *      .show();
      */
     event (event) {
-        if (event == undefined) return glb.event;
+        if (event == undefined) return globals.event;
         if (['hover', 'click', 'doubleClick'].indexOf(event) == -1) {
             console.error(`The event, ${event} is not valid. Event must be one of ['hover' | 'click' | 'doubleClick']`);
         } else {
-            glb.event = event;
+            globals.event = event;
             switch (event) {
                 case 'hover' :
-                    glb.eventTypeOver = 'mouseenter';
-                    glb.eventTypeOut = 'mouseleave';
-                    glb.eventListenerOver = mouseOver;
-                    glb.eventListenerOut = mouseOut;
+                    globals.eventTypeOver = 'mouseenter';
+                    globals.eventTypeOut = 'mouseleave';
+                    globals.eventListenerOver = mouse.mouseOver;
+                    globals.eventListenerOut = mouse.mouseOut;
                     break;
                 case 'click' :
-                    glb.eventTypeOver = 'click';
-                    glb.eventTypeOut = 'click';
-                    glb.eventListenerOver = click;
-                    glb.eventListenerOut = click;
+                    globals.eventTypeOver = 'click';
+                    globals.eventTypeOut = 'click';
+                    globals.eventListenerOver = mouse.click;
+                    globals.eventListenerOut = mouse.click;
                     break;
                 case 'doubleClick' :
-                    glb.eventTypeOver = 'dblclick';
-                    glb.eventTypeOut = 'dblclick';
-                    glb.eventListenerOver = click;
-                    glb.eventListenerOut = click;
+                    globals.eventTypeOver = 'dblclick';
+                    globals.eventTypeOut = 'dblclick';
+                    globals.eventListenerOver = mouse.click;
+                    globals.eventListenerOut = mouse.click;
                     break;
-            };
-        };
-        return this;
+            }        }        return this;
     }
 
     /**
@@ -279,14 +276,13 @@ export class biPartite {
      *      .show();
      */
     sort (sort) {
-        if (sort == undefined) return glb.sort;
+        if (sort == undefined) return globals.sort;
         if (['alpha', 'barycentric', 'sh', 'none'].indexOf(sort) == -1) {
             console.error(`The sort, ${sort} is not valid. Event must be one of ['alpha' | 'barycentric' | 'sh' | 'none']`);
         } else {
-            glb.sort = sort;
-            glb.refresh = true;
-        };
-        return this;
+            globals.sort = sort;
+            globals.refresh = true;
+        }        return this;
     }
 
     /**
@@ -301,14 +297,13 @@ export class biPartite {
      *      .show();
      */
     edgeMode (edgeMode) {
-        if (edgeMode == undefined) return glb.edgeMode;
+        if (edgeMode == undefined) return globals.edgeMode;
         if (['straight', 'curved'].indexOf(edgeMode) == -1) {
-            console.error(`The edge model, ${edgeMode} is not valid. The edge mode must be one of ['straight' | 'curved']`)
+            console.error(`The edge model, ${edgeMode} is not valid. The edge mode must be one of ['straight' | 'curved']`);
         } else {
-            glb.edgeMode = edgeMode;
-            glb.refresh = true
-        };
-        return this;
+            globals.edgeMode = edgeMode;
+            globals.refresh = true;
+        }        return this;
     }
 
     /**
@@ -322,14 +317,13 @@ export class biPartite {
      *      .show();
      */
     edgeOpacity (edgeOpacity) {
-        if (edgeOpacity == undefined) return glb.edgeOpacity;
+        if (edgeOpacity == undefined) return globals.edgeOpacity;
         if (typeof edgeOpacity != 'number' || edgeOpacity < 0 || edgeOpacity > 1) {
             console.error(`The edge opacity, ${edgeOpacity} is not valid. The edge opacity must be a number between 0 and 1 inclusive`);
         } else {
-        glb.edgeOpacity = edgeOpacity;
-        glb.refresh = true;
-        };
-        return this;
+        globals.edgeOpacity = edgeOpacity;
+        globals.refresh = true;
+        }        return this;
     }
 
     /**
@@ -347,14 +341,13 @@ export class biPartite {
      *      .show();
      */
     fillColors (fillColors) {
-        if (fillColors == undefined) return glb.fillColors;
+        if (fillColors == undefined) return globals.fillColors;
         if (typeof fillColors != 'Array') {
-            console.error(`The fillColors, ${fillColors} are not valid. They must be an array of valid CSS colors`)
+            console.error(`The fillColors, ${fillColors} are not valid. They must be an array of valid CSS colors`);
         } else {
-            glb.fillColors = fillColors;
-            glb.refresh = true;
-        };
-        return this;
+            globals.fillColors = fillColors;
+            globals.refresh = true;
+        }        return this;
     }
 
     /**
@@ -371,14 +364,13 @@ export class biPartite {
      *      .show();
      */
     pad (pad) {
-        if (pad == undefined) return glb.pad;
+        if (pad == undefined) return globals.pad;
         if (typeof pad != 'number') {
-            console.error(`The pad argument, ${pad} is not valid. It must be a number of pixels`)
+            console.error(`The pad argument, ${pad} is not valid. It must be a number of pixels`);
         } else {
-            glb.pad = pad;
-            glb.refresh = true;
-        };
-        return this;
+            globals.pad = pad;
+            globals.refresh = true;
+        }        return this;
     }
 
     /**
@@ -393,14 +385,15 @@ export class biPartite {
      *      .show();
      */
     duration (duration) {
-        if (duration == undefined) return glb.duration;
+        if (duration == undefined) return globals.duration;
         if (typeof duration != 'number') {
-            console.error(`The duration argument, ${duration} is not valid. It must be a number in milliseconds`)
+            console.error(`The duration argument, ${duration} is not valid. It must be a number in milliseconds`);
         } else {
-            glb.duration = duration;
-            glb.refresh = true;
-        };
-        return this;
+            globals.duration = duration;
+            globals.refresh = true;
+        }        return this;
     }
 
 }
+
+exports.biPartite = biPartite;

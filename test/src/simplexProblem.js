@@ -1,3 +1,7 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 /**
  * @module simplexProblem
  * @desc Provides one function to create an objective and constraints for a simplex
@@ -14,7 +18,7 @@
  * @returns {Array} A two dimensional array containing the objective function (string) and
  * the constraints (two-dimensional array of strings).
  */
-export function buildSimplexProblem (data, min, available) {
+function buildSimplexProblem (data, min, available) {
 
 	if (data.length == 0) return [[],[]];
     
@@ -32,3 +36,5 @@ export function buildSimplexProblem (data, min, available) {
     return [objective, constraints];
 
 }
+
+exports.buildSimplexProblem = buildSimplexProblem;

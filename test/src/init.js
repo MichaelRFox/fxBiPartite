@@ -1,9 +1,21 @@
-import {default as d3} from './d3Build.js';
-import {biPartite} from './biPartite.js';
+'use strict';
 
-export function init () {
- 
-    let svg = d3.select(biPartite.container())
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var d3Build = require('./d3Build.js');
+var globals = require('./globals.js');
+
+/**
+ * @module init
+ * @desc Provides one function to initialize the svg environment.
+ */
+
+/**
+ * @function init
+ * @desc Initializes the svg for the graph.
+ */
+function init () {
+    let svg = d3Build.select(globals.graph.container())
         .append('svg')
             .attr('id', 'svg')
             .attr('width', '100%')
@@ -27,5 +39,6 @@ export function init () {
         .attr('id','biPartite-mainBar');
 
     return svgG;
-
 }
+
+exports.init = init;

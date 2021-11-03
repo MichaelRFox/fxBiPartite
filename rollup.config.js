@@ -1,18 +1,31 @@
-import resolve from '@rollup/plugin-node-resolve';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 
-export default {
-  input: 'srcES6/index.js',
-  output: {
-    name: 'fxBiPartite',
-    file: 'dist/fxBiPartite.js',
-    strict: true,
-    format: 'iife'
-  },
-  plugins: [
-    resolve(),
-    commonjs(),
-    babel()
-	]
-};
+  var config = {
+    input: process.env.BUILD == 'iife' ? 'dist/fxBiPartite.js' : 'src/index.js',
+    output: {
+      name: 'biPartite',
+      // file: 'dist/fxBiPartite.js',
+      strict: true,
+      format: process.env.BUILD 
+    },
+    plugins: process.env.BUILD == 'iife' ?
+    [ nodeResolve(),
+      commonjs(),
+      babel({'babelHelpers': 'bundled'})
+    ] :
+    [
+      nodeResolve()
+    ]
+  };
+
+  if (process.env.BUILD == 'cjs') {
+    config.output.dir = './test/src';
+    config.output.preserveModules = true;
+    config.output.preserveModulesRoot = 'src';
+  } else {
+      config.output.file = 'dist/fxBiPartite.js';
+  };
+
+  export default config;

@@ -5,8 +5,7 @@
       {
         "debug": false,
         "useBuiltIns": "usage",
-        "corejs": 3.6,
-        "loose": false
+        "corejs": 3.19
       }
     ]
   ]

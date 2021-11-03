@@ -1,3 +1,7 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 /**
  * @module text
  * @desc Provides functions to compute text dimensions and
@@ -12,7 +16,7 @@
  * @param {string} font A CSS font specification.
  * @returns {Object} An object with key/value pairs for the computed width and height.
  */
-export function textDimensions (text, font) {
+function textDimensions (text, font) {
 
     let returnDimension = {};
     let pseudoDiv = insertPseudoDiv(text, font);
@@ -21,8 +25,7 @@ export function textDimensions (text, font) {
 
     document.body.removeChild(pseudoDiv);
     return returnDimension;
-};
-
+}
 /**
  * @function insertPseudoDiv
  * @desc Inserts a temporary HTML div element into the DOM for use in determining
@@ -45,8 +48,7 @@ function insertPseudoDiv(text, font) {
         pseudoDiv.style.display = 'inline-block';
     } else {
         pseudoDiv = document.getElementById('pseudoDiv');
-    };
-
+    }
     pseudoDiv.style.font = font;
 
     let textNode = document.createTextNode(text);
@@ -65,7 +67,7 @@ function insertPseudoDiv(text, font) {
  * @param {string} font A CSS font specification.
  * @returns {Object} An object with the longest primary and secondary label lengths
  */
-export function getLabelLengths (data, font) {
+function getLabelLengths (data, font) {
 
     let primary = data.reduce( (a, b) => {return a.concat(textDimensions(b[0], font).width)}, []);
     let secondary = data.reduce( (a, b) => {return a.concat(textDimensions(b[1], font).width)}, []);
@@ -74,3 +76,6 @@ export function getLabelLengths (data, font) {
 
     return {primary: primary, secondary: secondary}
 }
+
+exports.getLabelLengths = getLabelLengths;
+exports.textDimensions = textDimensions;

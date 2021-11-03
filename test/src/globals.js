@@ -1,9 +1,11 @@
+'use strict';
+
+var mouse = require('./mouse.js');
+
 /**
  * @module globals
  * @desc Provides internal storage for all of the [biPartite class object's]{@link biPartite} options.
  */
-
-import {mouseOver, mouseOut} from './mouse.js';
 
 /**
  * @typedef globals
@@ -63,7 +65,7 @@ import {mouseOver, mouseOut} from './mouse.js';
  * [biPartie class object's]{@link biPartite} [event]{@link biPartite#event} method.
  * **Default**: mouseOut.
  */
-export default {
+var glb = {
     graph: undefined,
     data: [],
     container: undefined, 
@@ -84,6 +86,8 @@ export default {
     labelOffset: 0,
     eventTypeOver: 'mouseenter',
     eventTypeOut: 'mouseleave',
-    eventListenerOver: mouseOver,
-    eventListenerOut: mouseOut
-}
+    eventListenerOver: mouse.mouseOver,
+    eventListenerOut: mouse.mouseOut
+};
+
+module.exports = glb;

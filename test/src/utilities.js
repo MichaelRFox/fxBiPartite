@@ -1,11 +1,16 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var d3Build = require('./d3Build.js');
+var text = require('./text.js');
+var globals = require('./globals.js');
+var font = require('./font.js');
+
 /**
  * @module utilities
  * @desc Utility functions for fxBiPartite.
  */
-import {default as d3} from './d3Build';
-import {textDimensions, getLabelLengths} from './text';
-import {default as glb} from './globals';
-import {getFont} from './font';
 
 /**
  * @function formatPercent
@@ -13,7 +18,7 @@ import {getFont} from './font';
  * @param {number} value The number to be transformed.
  * @returns {string} The value formatted as a percentage.
  */
-export function formatPercent (value) {
+function formatPercent (value) {
 
     return value < 0.01 ? '< 1%' : `${parseFloat(value * 100).toFixed(0)}%`
 }
@@ -27,18 +32,18 @@ export function formatPercent (value) {
  * (source) margin, the secondary (target) margin, the man bar minimum height,
  * and the main bar minimum width. 
  */
-export function getMargins (data) {
+function getMargins (data) {
     
-    let font = getFont('.biPartite-label'); // for label margins
-    const dimensions = getLabelLengths(data, font);
-    const minHeight = textDimensions('Mg', font).height;
-    font = getFont('.biPartite-percentage'); //for minWidth
+    let font$1 = font.getFont('.biPartite-label'); // for label margins
+    const dimensions = text.getLabelLengths(data, font$1);
+    const minHeight = text.textDimensions('Mg', font$1).height;
+    font$1 = font.getFont('.biPartite-percentage'); //for minWidth
 
     return {
-        primary: dimensions['primary'] + glb.graph.pad(),
-        secondary: dimensions['secondary'] + glb.graph.pad(),
+        primary: dimensions['primary'] + globals.graph.pad(),
+        secondary: dimensions['secondary'] + globals.graph.pad(),
         minHeight: minHeight,
-        minWidth: textDimensions('100%', font)['width']
+        minWidth: text.textDimensions('100%', font$1)['width']
     };
 }
 
@@ -49,10 +54,10 @@ export function getMargins (data) {
  * @returns {Array} An array of numbers with the width, height, minimum width,
  * minimum height, and label offset.
  */
-export function graphSize () {
+function graphSize () {
 
     const labelMargin = 10;
-    const margins = getMargins(glb.graph.data());
+    const margins = getMargins(globals.graph.data());
     const minHeight = margins.minHeight;
     const minWidth = margins.minWidth;
     const labelOffset = (minWidth / 2) + labelMargin;
@@ -60,16 +65,15 @@ export function graphSize () {
     let width;
     let height;
 
-    if (glb.graph.orient() == 'vertical') {
-        width = glb.graph.container().getBoundingClientRect().width - margins.primary - margins.secondary - (labelMargin * 2) - (minWidth / 2);
-        d3.select('#svgG').attr('transform', `translate(${margins.primary + labelOffset}, ${0})`);
-        height = glb.graph.container().getBoundingClientRect().height;
+    if (globals.graph.orient() == 'vertical') {
+        width = globals.graph.container().getBoundingClientRect().width - margins.primary - margins.secondary - (labelMargin * 2) - (minWidth / 2);
+        d3Build.select('#svgG').attr('transform', `translate(${margins.primary + labelOffset}, ${0})`);
+        height = globals.graph.container().getBoundingClientRect().height;
     } else {
-        width = glb.graph.container().getBoundingClientRect().width;
-        d3.select('#svgG').attr('transform', `translate(0, ${margins.primary + labelOffset})`);
-        height = glb.graph.container().getBoundingClientRect().height - margins.primary - margins.secondary - (labelMargin * 2) - (minWidth / 2);
-    };
-
+        width = globals.graph.container().getBoundingClientRect().width;
+        d3Build.select('#svgG').attr('transform', `translate(0, ${margins.primary + labelOffset})`);
+        height = globals.graph.container().getBoundingClientRect().height - margins.primary - margins.secondary - (labelMargin * 2) - (minWidth / 2);
+    }
     return [width, height, minWidth, minHeight, labelOffset];
 }
 
@@ -82,7 +86,7 @@ export function graphSize () {
  * **Default**: 'left'.
  * @returns {string} The path collapsed to its leftmost or topmost line or curve.
  */
-export function collapsePath(path, origin = 'left') {
+function collapsePath(path, origin = 'left') {
 
     const regex = /[,\s]|[a-z]/gi;
     const pathSplit = path.split(regex);
@@ -103,16 +107,14 @@ export function collapsePath(path, origin = 'left') {
  * @param {number} n The size of the array
  * @returns {Array} The requested array.
  */
-export function initArray (n) {
+function initArray (n) {
 
     let a = new Array(n);
     for (let i = 0; i < n; ++i) {
-        a[i] = 0
-    };
-
+        a[i] = 0;
+    }
     return a;
-};
-
+}
 /**
  * @function getKeys
  * @desc Gets the source and target keys from the data.
@@ -121,7 +123,7 @@ export function initArray (n) {
  * @returns {Object} An object with key/value pairs for source keys (array of strings)
  * and target keys (array of strings).
  */
-export function getKeys (data) {
+function getKeys (data) {
 
     let sourceKeys = [... new Set(data.reduce((a,b) => {return a.concat(keyPrimary(b))}, []))];
     let targetKeys = [... new Set(data.reduce((a,b) => {return a.concat(keySecondary(b))}, []))];
@@ -136,8 +138,7 @@ export function getKeys (data) {
  * and value (number).
  * @returns {string} The primary key.
  */
-export function keyPrimary (d) {return d[0]};
-
+function keyPrimary (d) {return d[0]}
 /**
  * @function keySecondary
  * @desc Retrieves the secondary (target) key for a single data entry.
@@ -145,8 +146,7 @@ export function keyPrimary (d) {return d[0]};
  * and value (number).
  * @returns {string} The secondary key.
  */
-export function keySecondary (d) {return d[1]};
-
+function keySecondary (d) {return d[1]}
 /**
  * @function value
  * @desc Retrieves the value for a single data entry.
@@ -154,8 +154,7 @@ export function keySecondary (d) {return d[1]};
  * and value (number).
  * @returns {number} The value.
  */
-export function value (d) {return d[2]};
-
+function value (d) {return d[2]}
 /**
  * @function fx
  * @desc Computes the x coordinate for bars and sub bar rectangles.
@@ -164,8 +163,7 @@ export function value (d) {return d[2]};
  * (number), percent (number), key (string), and part (string), and value (number).
  * @returns {number} The x coordinate.
  */
-export function fx (d) {return -d.width};
-
+function fx (d) {return -d.width}
 /**
  * @function fy
  * @desc Computes the y coordinate for bars and sub bar rectangles.
@@ -174,8 +172,7 @@ export function fx (d) {return -d.width};
  * (number), percent (number), key (string), and part (string), and value (number).
  * @returns {number} The y coordinate.
  */
-export function fy (d) {return -d.height};
-
+function fy (d) {return -d.height}
 /**
  * @function fw
  * @desc Computes the width for bars and sub bar rectangles.
@@ -184,8 +181,7 @@ export function fy (d) {return -d.height};
  * (number), percent (number), key (string), and part (string), and value (number).
  * @returns {number} The width.
  */
-export function fw (d) {return 2 * d.width};
-
+function fw (d) {return 2 * d.width}
 /**
  * @function fh
  * @desc Computes theheight for bars and sub bar rectangles.
@@ -194,4 +190,18 @@ export function fw (d) {return 2 * d.width};
  * (number), percent (number), key (string), and part (string), and value (number).
  * @returns {number} The height.
  */
-export function fh (d) {return 2 * d.height};
+function fh (d) {return 2 * d.height}
+
+exports.collapsePath = collapsePath;
+exports.fh = fh;
+exports.formatPercent = formatPercent;
+exports.fw = fw;
+exports.fx = fx;
+exports.fy = fy;
+exports.getKeys = getKeys;
+exports.getMargins = getMargins;
+exports.graphSize = graphSize;
+exports.initArray = initArray;
+exports.keyPrimary = keyPrimary;
+exports.keySecondary = keySecondary;
+exports.value = value;

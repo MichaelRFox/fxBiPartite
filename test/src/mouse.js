@@ -1,13 +1,17 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var d3Build = require('./d3Build.js');
+var globals = require('./globals.js');
+var utilities = require('./utilities.js');
+var calculate = require('./calculate.js');
+var transitions = require('./transitions.js');
+
 /**
  * @module mouse
  * @desc Provides listeners for interaction and updates the graph accordingly.
  */
-
-import {default as d3} from './d3Build';
-import {default as glb} from './globals';
-import {fx, fy, fh, fw, formatPercent} from './utilities';
-import {bars} from './calculate';
-import {getTransitions} from './transitions';
 
 /**
  * Holds the current state of the interaction
@@ -24,7 +28,7 @@ let state = 'unclicked';
  * @param {Object} event The DOM event being processed.
  * @event
  */
-export function click (event) {
+function click (event) {
 
     if (state == 'unclicked') {
         state = 'clicked';
@@ -32,8 +36,7 @@ export function click (event) {
     } else {
         state = 'unclicked';
         mouseOut (event);
-    };
-}
+    }}
 
 /**
  * @function mouseOver
@@ -43,34 +46,34 @@ export function click (event) {
  * @param {Object} event The DOM event being processed.
  * @event
  */
-export function mouseOver (event) {
+function mouseOver (event) {
 
-    let d = d3.select(event.currentTarget).datum();
+    let d = d3Build.select(event.currentTarget).datum();
 
-    let newbars = bars(d);
-    let [t, t1, t2] = getTransitions(glb.graph.duration(), 'mouse');
+    let newbars = calculate.bars(d);
+    let [t, t1, t2] = transitions.getTransitions(globals.graph.duration(), 'mouse');
 
-    d3.selectAll('.biPartite-mainBar')
+    d3Build.selectAll('.biPartite-mainBar')
         .filter(function(r){ return r.part===d.part && r.key === d.key})
         .select('rect')
         .style('stroke-opacity', 1);
       
-    d3.selectAll('.biPartite-subBar')
+    d3Build.selectAll('.biPartite-subBar')
         .data(newbars.subBars)
         .transition(t)
             .attr('transform', d => {return `translate(${d.x},${d.y})`})
             .select('rect')
-            .attr('x', fx)
-            .attr('y', fy)
-            .attr('width', fw)
-            .attr('height', fh);
+            .attr('x', utilities.fx)
+            .attr('y', utilities.fy)
+            .attr('width', utilities.fw)
+            .attr('height', utilities.fh);
     
-    let e = d3.selectAll('.biPartite-edge')
+    let e = d3Build.selectAll('.biPartite-edge')
         .data(newbars.edges);
     
     e.filter(function(t){ return t[d.part] === d.key;})
         .transition(t)
-            .style('fill-opacity', glb.graph.edgeOpacity())
+            .style('fill-opacity', globals.graph.edgeOpacity())
             .attr('d',function(d){ return d.path}); 
     
     e.filter(function(t){ return t[d.part] !== d.key;})
@@ -78,22 +81,22 @@ export function mouseOver (event) {
             .style('fill-opacity',0)
             .attr('d',function(d){ return d.path});
     
-    let mainBars = d3.selectAll('.biPartite-mainBar')
-        .data(newbars.mainBars)
+    let mainBars = d3Build.selectAll('.biPartite-mainBar')
+        .data(newbars.mainBars);
     
     mainBars.transition(t)
         .attr('transform', d => {return `translate(${d.x},${d.y})`})
         .select('rect')
-        .attr('x', fx)
-        .attr('y', fy)
-        .attr('width', fw)
-        .attr('height', fh);
+        .attr('x', utilities.fx)
+        .attr('y', utilities.fy)
+        .attr('width', utilities.fw)
+        .attr('height', utilities.fh);
 
     mainBars.select('.biPartite-percentage.white')
         .transition(t1)
             .style('opacity', element => {return d.part == element.part ? 1: 0})
         .transition(t2)
-            .text(element => {return element.value == 0 ? '' : formatPercent(element.percent)})
+            .text(element => {return element.value == 0 ? '' : utilities.formatPercent(element.percent)})
             .style('opacity', element => {return element.value == 0 ? 0 : 1});
 
     mainBars.select('.biPartite-label')
@@ -110,51 +113,51 @@ export function mouseOver (event) {
  * @param {Object} event The DOM event being processed.
  * @event
  */
-export function mouseOut (event) {
+function mouseOut (event) {
 
-    let d = d3.select(event.currentTarget).datum();
+    let d = d3Build.select(event.currentTarget).datum();
 
-    let newBars = bars();
-    let [t, t1, t2] = getTransitions(glb.graph.duration(), 'mouse');
+    let newBars = calculate.bars();
+    let [t, t1, t2] = transitions.getTransitions(globals.graph.duration(), 'mouse');
 
-    d3.selectAll('.biPartite-mainBar')
+    d3Build.selectAll('.biPartite-mainBar')
         .filter(r => {return r.part===d.part && r.key === d.key})
         .select('rect')
-        .style('stroke-opacity', 0)
+        .style('stroke-opacity', 0);
       
-    d3.selectAll('.biPartite-subBar')
+    d3Build.selectAll('.biPartite-subBar')
         .data(newBars.subBars)
         .transition(t)
             .attr('transform', d => {return `translate(${d.x},${d.y})`})
             .select('rect')
-            .attr('x',fx)
-            .attr('y',fy)
-            .attr('width',fw)
-            .attr('height',fh);
+            .attr('x',utilities.fx)
+            .attr('y',utilities.fy)
+            .attr('width',utilities.fw)
+            .attr('height',utilities.fh);
         
-    d3.selectAll('.biPartite-edge')
+    d3Build.selectAll('.biPartite-edge')
         .data(newBars.edges)
         .transition(t)
-        .style('fill-opacity', glb.graph.edgeOpacity())
+        .style('fill-opacity', globals.graph.edgeOpacity())
         .attr('d', d => {return d.path});
         
-    let mainBars = d3.selectAll('.biPartite-mainBar')
-        .data(newBars.mainBars)
+    let mainBars = d3Build.selectAll('.biPartite-mainBar')
+        .data(newBars.mainBars);
 
     mainBars
         .transition(t)
             .attr('transform', d => {return `translate(${d.x},${d.y})`})
             .select('rect')
-            .attr('x', fx)
-            .attr('y', fy)
-            .attr('width', fw)
-            .attr('height', fh);
+            .attr('x', utilities.fx)
+            .attr('y', utilities.fy)
+            .attr('width', utilities.fw)
+            .attr('height', utilities.fh);
 
     mainBars.select('.biPartite-percentage.white')
         .transition(t1)
             .style('opacity', element => {return d.part == element.part ? 1: 0})
         .transition(t2)
-            .text(element => {return element.value == 0 ? '' : formatPercent(element.percent) })
+            .text(element => {return element.value == 0 ? '' : utilities.formatPercent(element.percent) })
             .style('opacity', element => {return element.value == 0 ? 0 : 1});
 
     mainBars.select('.biPartite-label')
@@ -162,3 +165,7 @@ export function mouseOut (event) {
             .style('opacity', 1);
 
 }
+
+exports.click = click;
+exports.mouseOut = mouseOut;
+exports.mouseOver = mouseOver;

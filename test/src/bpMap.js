@@ -1,10 +1,14 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var simplexProblem = require('./simplexProblem.js');
+var simplex = require('./node_modules/fxsimplex/src/simplex.js');
+
 /**
  * @module bpMap
  * @desc Provides a single function to map data values to coordinates.
  */
-
-import {buildSimplexProblem} from './simplexProblem.js';
-import {simplex} from 'fxsimplex';
 
 /**
  * @function bpMap
@@ -18,7 +22,7 @@ import {simplex} from 'fxsimplex';
  * @returns {Array} An array of objects, each containing key/value pairs for the computed
  * start, end, and pad for each bar.
  */
-export function bpMap (array, pad, min, start, end) {
+function bpMap (array, pad, min, start, end) {
 
     let ret = [];
 
@@ -28,7 +32,7 @@ export function bpMap (array, pad, min, start, end) {
     let availableSize = end - start - totalPad;
     let totalSize = data.reduce((a, b) => {return a + b}, 0);
 
-    const [objective, constraints] = buildSimplexProblem(data, min, availableSize);
+    const [objective, constraints] = simplexProblem.buildSimplexProblem(data, min, availableSize);
     let {solution, result} = simplex(objective, constraints);
    
     let ratio;
@@ -42,8 +46,7 @@ export function bpMap (array, pad, min, start, end) {
             break;
         default:
             ratio = solution.reduce((a,b) => {return b[0] == 'r' ? b[1] : a}, 0);
-    };
-
+    }
     let b = start;
     let o = ratio;
     array.forEach (d => { 
@@ -59,3 +62,5 @@ export function bpMap (array, pad, min, start, end) {
     }); 
     return ret;
 }
+
+exports.bpMap = bpMap;
