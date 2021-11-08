@@ -1,5 +1,3 @@
-// import {jest} from '@jest/globals';
-// import {formatPercent, collapsePath, initArray, getKeys} from '../../src/utilities.js';
 require('jest');
 var utilities = require('../src/utilities')
 
@@ -13,6 +11,17 @@ test.each`
         expect(utilities.formatPercent(input)).toBe(expected);
 });
 
+test.each ([
+            {bar0: {x:0, y:0, width:100, height:100}, bar1: {x:150, y:0, width:100, height:100}, expected: false}, 
+            {bar0: {x:0, y:0, width:100, height:100}, bar1: {x:0, y:150, width:100, height:100}, expected: false}, 
+            {bar0: {x:300, y:0, width:100, height:100}, bar1: {x:0, y:0, width:100, height:100}, expected: false}, 
+            {bar0: {x:0, y:300, width:100, height:100}, bar1: {x:0, y:0, width:100, height:100}, expected: false}, 
+            {bar0: {x:0, y:0, width:100, height:100}, bar1: {x:50, y:50, width:100, height:100}, expected: true},
+            {bar0: {x:0, y:0, width:100, height:100}, bar1: {x:0, y:0, width:100, height:100}, expected: true}
+    ])('overlap test - returns $expected when bar0 is $bar0 and bar1 is $bar1', ({bar0, bar1, expected}) => {
+        expect(utilities.overlap(bar0, bar1)).toBe(expected);
+
+});
 
 test.each ([
     {input: 'M28.7890625,2.0781456C768.4375,2.0781456 768.4375,275.6949345999999,1508.0859375,275.6949345999999L1508.0859375,275.66367379999997C768.4375,275.66367379999997 768.4375,2,28.7890625,2z',

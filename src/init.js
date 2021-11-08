@@ -16,22 +16,20 @@ export function init () {
             .attr('width', '100%')
             .attr('height', '100%');
 
+    svg.append('defs')
+
     let svgG = svg
         .append('g')
         .attr('class', 'biPartite')
         .attr('id', 'svgG');
 
-    svgG
-        .append('g')
-        .attr('id', 'biPartite-subBar');
+    svgG.append('g').attr('id', 'percentBlackG');
 
-    svgG
-        .append('g')
-        .attr('id','biPartite-edge');
+    svgG.append('g').attr('id', 'biPartite-subBar');
 
-    svgG
-        .append('g')
-        .attr('id','biPartite-mainBar');
+    svgG.append('g').attr('id','biPartite-edge');
+
+    svgG.append('g').attr('id','biPartite-mainBar');
 
     return svgG;
 }

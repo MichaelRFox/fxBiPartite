@@ -1,6 +1,6 @@
 {
   "name": "fxbipartite",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Interactive bipartite graph layout",
   "main": "dist/fxBipartite.js",
   "module": "src/index.js",
@@ -10,12 +10,11 @@
     "dist": "dist"
   },
   "scripts": {
-    "testOLD": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "pretest": "rollup -c --environment BUILD:cjs",
     "test": "jest",
-    "posttest": "",
+    "posttest": "rm -rf test/src",
     "prebuild": "rollup -c --environment BUILD:es",
-    "build": "rollup -c --environment BUILD:iife",
+    "build": "rollup -c --environment BUILD:umd",
     "postbuild": "fxstripjsdoc ./dist/fxBipartite.js && npm run terser",
     "terser": "terser ./dist/fxBiPartite.js -o ./dist/fxBiPartite.min.js --config-file terser.config.json",
     "docTest": "jsdoc -P package.json -c jsDocConfig.json",

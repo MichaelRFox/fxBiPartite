@@ -11,7 +11,7 @@
 > - :hammer_and_wrench:	[Improvement]
 
 # v2.0.0
-## date
+## 8 Nov, 2021
 - :boom: Changed library to expose a singe class object with the required items (data and container) in the constructor. This will require code to be changed from:
 ```javascript
 fxBiPartite.biPartite
@@ -31,7 +31,11 @@ new biPartite(data, document.getElementById('myDiv'))
 - :bug: Fixed undeclared variable in *containerListener*.
 - :eyeglasses: Renamed .babelrc to .babelrc.json.
 - :pencil: Added jsDoc documentation.
-- :house: Converted test harness from tape to jest - better ES module support.
+- :hammer_and_wrench: Improved test color sensing based on background.
+- :house: Converted test harness from *tape* to *jest*. Added several tests.
+- :hammer_and_wrench: Improved visibility of percent labels.
+- :rocket: Added features to define text colors which are now selected based on the background.
+- :hammer_and_wrench: Added error checking of biPartitel methods
 
 # v1.0.1
 ## 13 Oct, 2020

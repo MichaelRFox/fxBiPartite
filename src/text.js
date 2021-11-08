@@ -4,6 +4,7 @@
  * the maximum size of the graph labels.
  */
 
+import {insertPseudoDiv} from './utilities.js';
 
 /**
  * @function textDimensions
@@ -15,46 +16,16 @@
 export function textDimensions (text, font) {
 
     let returnDimension = {};
-    let pseudoDiv = insertPseudoDiv(text, font);
-
+    let pseudoDiv = insertPseudoDiv(text);
+    pseudoDiv.style.font = font;
+    let textNode = document.createTextNode(text);
+    pseudoDiv.appendChild(textNode);      
     returnDimension = {width: pseudoDiv.getBoundingClientRect()['width'], height: pseudoDiv.getBoundingClientRect()['height']};
 
     document.body.removeChild(pseudoDiv);
     return returnDimension;
 };
 
-/**
- * @function insertPseudoDiv
- * @desc Inserts a temporary HTML div element into the DOM for use in determining
- * the width and height of text.
- * @param {string} text The text to be evaluated.
- * @param {string} font A CSS font specification.
- * @returns {HTML.div} A dive element formatted with the specified font and
- * containing a text node with the supplied text.
- */
-function insertPseudoDiv(text, font) {
-
-    let pseudoDiv;
-
-    if (document.getElementById('pseudoDiv') == null) {
-        pseudoDiv = document.createElement('div');
-        document.body.insertBefore(pseudoDiv, document.body.firstChild);
-        pseudoDiv.setAttribute('id', 'pseudoDiv');
-        pseudoDiv.style.visibility = 'hidden';
-        pseudoDiv.style.position = 'absolute';
-        pseudoDiv.style.display = 'inline-block';
-    } else {
-        pseudoDiv = document.getElementById('pseudoDiv');
-    };
-
-    pseudoDiv.style.font = font;
-
-    let textNode = document.createTextNode(text);
-    pseudoDiv.appendChild(textNode);      
-    
-    return pseudoDiv;
-
-}
 
 /**
  * @function getLabelLengths

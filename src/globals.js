@@ -10,13 +10,20 @@ import {mouseOver, mouseOut} from './mouse.js';
  * @desc Stores all of the default options for the [biPartite class object]{@link biPartite}
  * and keeps track of changes made to them.
  * @property {biPartite} graph The [biPartite class object]{@link biPartite}. This property
- * is set when the [biPartite constructor]{@link biPartite#constrctor} is called. **Default**: undefined.
+ * is set when the [biPartite constructor]{@link biPartite#constructor} is called. **Default**: undefined.
  * @property {Array} data A two-dimensional array of source (string), target (string),
  * and value (number) tuples. **Default**: []. 
  * @property {HTML.div} container The element in which the graph is to be rendered.
  * **Default**: undefined.
+ * @property {string} containerBackground The background color of the container. **Default**: 'rgb(255, 255, 255)'.
+ * @property {string} labelColor The color of the labels. **Default**: 'rgb(0, 0, 0)'.
  * @property {Array} fillColors An array of strings for the colors of the bars and edges.
- * **Default**: ['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854','#ffd92f','#e5c494','#b3b3b3']
+ * **Default**: ['rgb(102, 194, 165)', 'rgb(252, 141, 98)', 'rgb(141, 160, 203)', 'rgb(231, 138, 195)',
+ * 'rgb(166, 216, 84)', 'rgb(255, 217, 47)', 'rgb(229, 196, 148)', 'rgb(179, 179, 179)'].
+ * @property {string} lightTextColor The text color to use over dark backgrounds. **Default**: '(rgb(255, 255, 255)'.
+ * @property {number} lightTextLuminance The luminance of the lightTextColor. **Default**: 1.
+ * @property {string} darkTextColor The text color to use over light backgrounds. **Default**: '(rgb(0, 0, 0)'.
+ * @property {number} darkTextLuminance The luminance of the darkTextColor. **Default**: 0.
  * @property {string} sort The sorting method for the bars. One of [alpha | barycentric
  * | sh | none]. **Default**: 'alpha'.
  * @property {Array} sourceKeys The text labels for the source bars. **Default**: [].
@@ -66,8 +73,14 @@ import {mouseOver, mouseOut} from './mouse.js';
 export default {
     graph: undefined,
     data: [],
-    container: undefined, 
-    fillColors: ['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854','#ffd92f','#e5c494','#b3b3b3'], 
+    container: undefined,
+    containerBackground: 'rgb(255, 255, 255)',
+    labelColor: 'rgb(0, 0, 0)',
+    lightTextColor: 'rgb(255, 255, 255)',
+    lightTextLuminance: 1,
+    darkTextColor: 'rgb(0, 0, 0)',
+    darkTextLuminance: 0,
+    fillColors: ['rgb(102, 194, 165)', 'rgb(252, 141, 98)', 'rgb(141, 160, 203)', 'rgb(231, 138, 195)', 'rgb(166, 216, 84)', 'rgb(255, 217, 47)', 'rgb(229, 196, 148)', 'rgb(179, 179, 179)'],
     sort: 'alpha',
     sourceKeys: [],
     targetKeys: [],

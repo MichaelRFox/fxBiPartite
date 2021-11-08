@@ -84,7 +84,7 @@ function calculateMainBars (part, mb) {
         });
     });
 
-    return mainBars
+    return mainBars;
 }
 
 /**
@@ -97,8 +97,9 @@ function calculateMainBars (part, mb) {
  * main bar being interacted with. Undefined at all other times.
  * @param {Array} mainBars The associated array of main bars as returned by the
  * [calculateMainBars]{@link module:calculate~calculateMainBars} function.
- * @returns {Array} An Array of objects containing key/value pairs for the path (string),
- * primary (string), secondary (string),and percent (number) of each edge.
+ * @returns {Array} An Array of objects containing key/value pairs for the x (number), y (number),
+ * height (number), width (number), percent (number), value (number), index (string), part (string), 
+ * primary (string), and secondary (string) of each sub bar.
  */
 function calculateSubBars (part, mb, mainBars) {
    
@@ -191,7 +192,6 @@ function calculateEdges (subBars) {
  * @returns {string} An svg path string. 
  */
 function edgeVert (x1,y1,x2,y2,x3,y3,x4,y4) {
-    // if (biPartite.edgeMode() == 'straight') {
     if (glb.graph.edgeMode() == 'straight') {
         return `M${x1},${y1}L${x2},${y2}L${x3},${y3}L${x4},${y4}z`;
     } else {
@@ -215,7 +215,6 @@ function edgeVert (x1,y1,x2,y2,x3,y3,x4,y4) {
  * @returns {string} An svg path string. 
  */
 function edgeHoriz (x1,y1,x2,y2,x3,y3,x4,y4) {
-    // if (biPartite.edgeMode() =='straight') {
     if (glb.graph.edgeMode() =='straight') {
         return `M${x1},${y1}L${x2},${y2}L${x3},${y3}L${x4},${y4}z`;
     } else {

@@ -184,9 +184,6 @@ function sortSH (data) {
 
     glb.sourceKeys = sourceKeys;
     glb.targetKeys = targetKeys;
-
-    // console.log ('sh crossings:', crossings);
-
 }
 
 /**

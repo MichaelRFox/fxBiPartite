@@ -8,6 +8,7 @@ import {default as glb} from './globals';
 import {fx, fy, fh, fw, formatPercent} from './utilities';
 import {bars} from './calculate';
 import {getTransitions} from './transitions';
+import {fill, textColor, subBarColors} from './color.js';
 
 /**
  * Holds the current state of the interaction
@@ -45,61 +46,8 @@ export function click (event) {
  */
 export function mouseOver (event) {
 
-    let d = d3.select(event.currentTarget).datum();
-
-    let newbars = bars(d);
-    let [t, t1, t2] = getTransitions(glb.graph.duration(), 'mouse');
-
-    d3.selectAll('.biPartite-mainBar')
-        .filter(function(r){ return r.part===d.part && r.key === d.key})
-        .select('rect')
-        .style('stroke-opacity', 1);
-      
-    d3.selectAll('.biPartite-subBar')
-        .data(newbars.subBars)
-        .transition(t)
-            .attr('transform', d => {return `translate(${d.x},${d.y})`})
-            .select('rect')
-            .attr('x', fx)
-            .attr('y', fy)
-            .attr('width', fw)
-            .attr('height', fh);
-    
-    let e = d3.selectAll('.biPartite-edge')
-        .data(newbars.edges);
-    
-    e.filter(function(t){ return t[d.part] === d.key;})
-        .transition(t)
-            .style('fill-opacity', glb.graph.edgeOpacity())
-            .attr('d',function(d){ return d.path}); 
-    
-    e.filter(function(t){ return t[d.part] !== d.key;})
-        .transition(t)
-            .style('fill-opacity',0)
-            .attr('d',function(d){ return d.path});
-    
-    let mainBars = d3.selectAll('.biPartite-mainBar')
-        .data(newbars.mainBars)
-    
-    mainBars.transition(t)
-        .attr('transform', d => {return `translate(${d.x},${d.y})`})
-        .select('rect')
-        .attr('x', fx)
-        .attr('y', fy)
-        .attr('width', fw)
-        .attr('height', fh);
-
-    mainBars.select('.biPartite-percentage.white')
-        .transition(t1)
-            .style('opacity', element => {return d.part == element.part ? 1: 0})
-        .transition(t2)
-            .text(element => {return element.value == 0 ? '' : formatPercent(element.percent)})
-            .style('opacity', element => {return element.value == 0 ? 0 : 1});
-
-    mainBars.select('.biPartite-label')
-        .transition(t)
-            .style('opacity', d => {return d.value == 0 ? 0 : 1});
-
+    let datum = d3.select(event.currentTarget).datum();
+    interact (datum, 'in');
 }
 
 /**
@@ -112,38 +60,65 @@ export function mouseOver (event) {
  */
 export function mouseOut (event) {
 
-    let d = d3.select(event.currentTarget).datum();
+    let datum = d3.select(event.currentTarget).datum();
+    interact(datum, 'out');
+}
 
-    let newBars = bars();
+/**
+ * @function interact
+ * @desc Transitions the filtering of bars and edges in response to mouse over and mouse out events.
+ * @param {Object} datum The data object selected for interaction.
+ * @param {string} state The state of the interaction, one of ['in' | 'out'].
+ * @since v2.0.0
+ */
+function interact (datum, state) {
+
+    let newBars = state == 'in' ? bars(datum) : bars();
     let [t, t1, t2] = getTransitions(glb.graph.duration(), 'mouse');
 
     d3.selectAll('.biPartite-mainBar')
-        .filter(r => {return r.part===d.part && r.key === d.key})
+        .filter(r => r.part === datum.part && r.key === datum.key)
         .select('rect')
-        .style('stroke-opacity', 0)
+        .style('stroke-opacity', state == 'in' ? 1 : 0)
       
     d3.selectAll('.biPartite-subBar')
         .data(newBars.subBars)
         .transition(t)
-            .attr('transform', d => {return `translate(${d.x},${d.y})`})
+            .attr('transform', d => `translate(${d.x},${d.y})`)
             .select('rect')
-            .attr('x',fx)
-            .attr('y',fy)
-            .attr('width',fw)
-            .attr('height',fh);
+            .attr('x', fx)
+            .attr('y', fy)
+            .attr('width', fw)
+            .attr('height', fh);
         
-    d3.selectAll('.biPartite-edge')
-        .data(newBars.edges)
-        .transition(t)
-        .style('fill-opacity', glb.graph.edgeOpacity())
-        .attr('d', d => {return d.path});
+    if (state == 'in') {
+        let edges = d3.selectAll('.biPartite-edge')
+            .data(newBars.edges);
+        
+        edges.filter(t => t[datum.part] === datum.key)
+            .transition(t)
+                .style('fill-opacity', glb.graph.edgeOpacity())
+                .attr('d', d => d.path); 
+        
+        edges.filter(t => t[datum.part] !== datum.key)
+            .transition(t)
+                .style('fill-opacity', 0)
+                .attr('d', d => d.path);
+
+    } else {
+        d3.selectAll('.biPartite-edge')
+            .data(newBars.edges)
+            .transition(t)
+                .style('fill-opacity', glb.graph.edgeOpacity())
+                .attr('d', d => d.path);
+    };
         
     let mainBars = d3.selectAll('.biPartite-mainBar')
         .data(newBars.mainBars)
 
     mainBars
         .transition(t)
-            .attr('transform', d => {return `translate(${d.x},${d.y})`})
+            .attr('transform', d => `translate(${d.x},${d.y})`)
             .select('rect')
             .attr('x', fx)
             .attr('y', fy)
@@ -152,13 +127,29 @@ export function mouseOut (event) {
 
     mainBars.select('.biPartite-percentage.white')
         .transition(t1)
-            .style('opacity', element => {return d.part == element.part ? 1: 0})
+            .style('opacity', element => datum.part == element.part ? 1: 0)
         .transition(t2)
-            .text(element => {return element.value == 0 ? '' : formatPercent(element.percent) })
-            .style('opacity', element => {return element.value == 0 ? 0 : 1});
+            .text(element => element.value == 0 ? '' : formatPercent(element.percent))
+            .style('fill', d => {
+                return d.part == 'secondary' ? textColor(subBarColors(newBars.subBars, d)) : textColor([fill(d)]);
+            })
+            .style('opacity', element => element.value == 0 ? 0 : 1);
+
+    mainBars.each ((d, i) => {
+            d3.select(`#percentBlack${i}`)
+                .transition(t)
+                .attr('transform', `translate(${d.x},${d.y})`);
+            d3.select(`#percentBlack${i}`).select('text')
+                .transition(t1)
+                    .style('opacity', 0)
+                .transition(t2)
+                    .text(d.value == 0 ? '' : formatPercent(d.percent))
+                    .style('opacity', d.value == 0 ? 0 : 1);
+    });
 
     mainBars.select('.biPartite-label')
         .transition(t)
-            .style('opacity', 1);
+            .style('opacity', d => d.value == 0 ? 0 : 1);
+
 
 }

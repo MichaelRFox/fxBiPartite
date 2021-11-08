@@ -27,10 +27,5 @@ npm install -g fxbipartite  //install globally
 
 See the [API documentation](https://michaelrfox.github.io/docs/fxbipartite/2.0.0/) for usage.
 
-
-
-
 # License
 MIT
-
-[:house: top](#top)

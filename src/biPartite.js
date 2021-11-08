@@ -1,11 +1,13 @@
 import {update} from './update.js';
 import {default as glb} from './globals.js';
 import {init} from './init.js';
-import {graphSize} from './utilities.js';
+import {graphSize, checkCSS} from './utilities.js';
+import {parseColor, luminance} from './color.js';
 import {bars} from './calculate';
 import {startListener, stopListener} from './container.js';
 import {mouseOver, mouseOut, click} from './mouse.js';
 import {sortKeys} from './sort.js';
+import {textColor, splitRgb} from './color.js';
 
 /** The biPartite class */
 export class biPartite {
@@ -27,7 +29,7 @@ export class biPartite {
      *      <head>
      *          <title>fxBiPartite example</title>
      *          <style>
-     *              .chart { //class styles for the container must specify height and width
+     *              .chart { <!-- class styles for the container must specify height and width -->
      *                  width: 90vw;
      *                  height: 90vh;
      *                  margin: 0 auto;
@@ -98,15 +100,14 @@ export class biPartite {
      *                     ["Grand", "AZ", 6228],
      *                     ["Lite", "AL", 15001]];
      * 
-     * 
      *      myGraph.data(newData)
-     *          .update();
+     *          .update();  // must update since we changed the data
      * 
      * </script>
      */
     data (data) {
         if (data == undefined) return glb.data;
-        if (typeof data != 'Array' || data[0].length != 3 || typeof data[0][0] != 'string' || typeof data[0][1] != 'string' || typeof data[0][3] != 'number') {
+        if (!data instanceof Array || data[0].length != 3 || typeof data[0][0] != 'string' || typeof data[0][1] != 'string' || typeof data[0][2] != 'number') {
             console.error('The data is not properly specified. It must be a two-dimensional array with tuples of [string, string, number] in each row.');
         } else {
             glb.data = data;
@@ -124,20 +125,66 @@ export class biPartite {
      * of the document body's width and height. If you use relative units such as *vh* or
      * *percent* the bipartite graph will automatically rescale to fill the container element
      * with the container element's size changes. If you are changing the container, the old
-     * container should be removed from the DOM and a new call to [biPartite.show]
-     * {link biPartite#show} should be made.
+     * container should be removed from the DOM and a new call to [biPartite.update]{@link biPartite#update}
+     * should be made.
      * @param {HTML.div} container An HTML element within which to place the bipartite graph.
      * **Default**: undefined.
      * @returns {(biPartite | HTML.div)} if the container argument is omitted, the current
      * container is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.container method example</caption>
      * let myGraph = new bBiPartite(data);
-     * myGraph.container(document.getElementById('myDiv'));
-     * myGraph.show();
+     * <!DOCTYPE html>
+     *      <head>
+     *          <style>
+     *              .chart { <!--class styles for the container must specify height and width -->
+     *                  width: 90vw;
+     *                  height: 90vh;
+     *                  margin: 0 auto;
+     *              }
+     *          </style>
+     *          <script type="text/javascript" src = 'fxBiPartite.js'></script>
+     *      </head>
+     *      <body>
+     *          <div id = 'myDiv' class = 'chart'></div>
+     * 
+     *          <script type = 'text/javascript'>
+
+     *              data = [["Lite", "CA",  16],
+     *                      ["Small", "CA", 1278],
+     *                      ["Medium", "CA", 27],
+     *                      ["Plus", "CA", 58],
+     *                      ["Grand", "CA", 1551],
+     *                      ["Elite", "CA", 141],
+     *                      ["Lite", "AZ", 5453],
+     *                      ["Small", "AZ", 683],
+     *                      ["Medium", "AZ", 862],
+     *                      ["Grand", "AZ", 6228],
+     *                      ["Lite", "AL", 15001]];
+     * 
+     *              let myGraph = new bBiPartite(data);
+     *              myGraph.container(document.getElementById('myDiv'));    
+     *              myGraph.show(); //displays the bipartite graph
+     * 
+     *          </script>
+     *      </body>
+     * </html>
+
      */
     container (container) {
         if (container == undefined) return glb.container;
+        
+        let containerBackground = 'rgb(255, 255, 255)'; // default
+        const color = window.getComputedStyle(container, null).getPropertyValue('background-color');
+        const rgb = splitRgb(color);
+        if (rgb != null && rgb[3] != 0) {
+            if (checkCSS('color', `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`)) {
+                containerBackground = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+            };
+        };
+
         glb.container = container;
+        glb.containerBackground = containerBackground;
+        glb.labelColor = textColor([containerBackground]);
         glb.refresh = true;
         this.#containerDefined = true;
         startListener();
@@ -201,7 +248,7 @@ export class biPartite {
      * top to bottom.
      * @param {string} orient A string indicating the orientation of the graph - one of
      * ['vertical' | 'horizontal']. **Default**: 'vertical',
-     * @returns {(biPartite |string)} if the orient argument is omitted, the current
+     * @returns {(biPartite |string)} If the orient argument is omitted, the current
      * orientation is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.orient method example</caption>
      * new biPartite(data, container)
@@ -223,7 +270,7 @@ export class biPartite {
      * The event which triggers interaction with the graph.
      * @param {string} event The event which triggers focusing on a particular node - one of
      * ['hover' | 'click' | 'doubleClick']. **Default**: 'hover'.
-     * @returns {(biPartite |string)} if the event argument is omitted, the current
+     * @returns {(biPartite |string)} If the event argument is omitted, the current
      * event is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.event method example</caption>
      * new biPartite(data, container)
@@ -271,7 +318,7 @@ export class biPartite {
      * If the *'none'* option is selected, the nodes are rendered in the order in the *data* option.
      * @param {string} sort A string indicating the type of sorting to use - one of
      * ['alpha' | 'barycentric' | 'sh' | 'none']. **Default**: 'alpha'.
-     * @returns {(biPartite |string)} if the sort argument is omitted, the current
+     * @returns {(biPartite |string)} If the sort argument is omitted, the current
      * sort is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.sort method example</caption>
      * new biPartite(data, container)
@@ -293,7 +340,7 @@ export class biPartite {
      * Sets whether the graph is rendered with straight line or curves.
      * @param {string} edgeMode The rendering of the edges - ['straight' | 'curved'].
      * **default**: 'curved'.
-     * @returns {(biPartite |string)} if the edgeMode argument is omitted, the current
+     * @returns {(biPartite |string)} If the edgeMode argument is omitted, the current
      * edgeMode is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.edgeMode method example</caption>
      * new biPartite(data, container)
@@ -313,8 +360,8 @@ export class biPartite {
 
     /**
      * If edge opacity is set to 1 edge crossings will be obscured.
-     * @param {string} edgeOpacity The opacity of the edges - [0...1]. **Default**: 0.4.
-     * @returns {(biPartite |string)} if the edgeOpacity argument is omitted, the current
+     * @param {number} edgeOpacity The opacity of the edges - [0...1]. **Default**: 0.4.
+     * @returns {(biPartite |string)} If the edgeOpacity argument is omitted, the current
      * edgeOpacity is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.edgeOpacity method example</caption>
      * new biPartite(data, container)
@@ -338,8 +385,9 @@ export class biPartite {
      * otherwise data indices greater than the number of colors available will wrap around and reuse
      * colors beginning with index zero.
      * @param {Array} fillColors An array of valid CSS color strings. **Default**:
-     * ['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854','#ffd92f','#e5c494','#b3b3b3']
-     * @returns {(biPartite | Array)} if the fillColors argument is omitted, the current
+     * ['rgb(102, 194, 165)', 'rgb(252, 141, 98)', 'rgb(141, 160, 203)', 'rgb(231, 138, 195)',
+     * 'rgb(166, 216, 84)', 'rgb(255, 217, 47)', 'rgb(229, 196, 148)', 'rgb(179, 179, 179)'].
+     * @returns {(biPartite | Array)} If the fillColors argument is omitted, the current
      * fillColors are returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.fillColors method example</caption>
      * new biPartite(data, container)
@@ -348,22 +396,67 @@ export class biPartite {
      */
     fillColors (fillColors) {
         if (fillColors == undefined) return glb.fillColors;
-        if (typeof fillColors != 'Array') {
-            console.error(`The fillColors, ${fillColors} are not valid. They must be an array of valid CSS colors`)
-        } else {
-            glb.fillColors = fillColors;
+
+        if (!fillColors instanceof Array) {
+             console.error(`The fillColors, ${fillColors} are not valid. They must be an array of valid CSS colors`)           
+        } else if (fillColors.every(d => checkCSS('color', d))) {
+            glb.fillColors = fillColors.map (d => parseColor(d));
             glb.refresh = true;
         };
+
         return this;
     }
+
+    /**
+     * Defines the color of text to be used over dark backgrounds.
+     * @param {string} lightTextColor Any valid CSS color. **Default**: 'rgb(255, 255, 255)'.
+     * @returns {(biPartite | string)} If the lightTextColor argument is omitted, the current
+     * lightTextColor is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
+     * @since v2.0.0
+     * @example <caption>biPartite.lightTextColor method example</caption>
+     * new biPartite(data, container)
+     *      .lightTextColor('#FFFFFF')
+     *      .show();
+     */
+     lightTextColor (lightTextColor) {
+        if (lightTextColor == undefined) return glb.lightTextColor;
+        if (checkCSS('color', lightTextColor)) {
+            glb.lightTextColor = parseColor(lightTextColor);
+            const rgb = splitRgb(glb.lightTextColor);
+            glb.lightTextLuminance = luminance(rgb[0], rgb[1], rgb[2]);
+        };
+        return this;
+     }
+
+    /**
+     * Defines the color of text to be used over light backgrounds.
+     * @param {string} darkTextColor Any valid CSS color. **Default**: 'rgb(0, 0, 0').
+     * @returns {(biPartite | string)} If the lightTextColor argument is omitted, the current
+     * lightTextColor is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
+     * @since v2.0.0
+     * @example <caption>biPartite.darkTextColor method example</caption>
+     * new biPartite(data, container)
+     *      .darkTextColor('#FFFFFF')
+     *      .show();
+     */
+     darkTextColor (darkTextColor) {
+        if (darkTextColor == undefined) return glb.darkTextColor;
+        if (checkCSS('color', darkTextColor)) {
+            glb.darkTextColor = parseColor(darkTextColor);
+            const rgb = splitRgb(glb.darkTextColor);
+            glb.darkTextLuminance = luminance(rgb[0], rgb[1], rgb[2]);
+        };
+        return this;
+     }
+
 
     /**
      * The pad option sets the spacing between elements of the graph, The pad option should be used
      * to enhance readability of the graph. However, in large graphs, too big of a pad may preclude
      * rendering of the entire graphs within the container.
-     * @param {number} pad the number of pixels between nodes as well as between the node labels
+     * @param {number} pad The number of pixels between nodes as well as between the node labels
      * and the edges of the container. **Default**: 1.
-     * @returns {(biPartite | number)} if the pad argument is omitted, the current
+     * @returns {(biPartite | number)} If the pad argument is omitted, the current
      * pad is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.pad method example</caption>
      * new biPartite(data, container)
@@ -383,9 +476,9 @@ export class biPartite {
 
     /**
      * The amount of time in milliseconds between transitions.
-     *@param {number} duration the number of milliseconds to complete a transition when focusing on
+     *@param {number} duration The number of milliseconds to complete a transition when focusing on
      * individual nodes. **Default**: 750.
-     * @returns {(biPartite | number)} if the duration argument is omitted, the current
+     * @returns {(biPartite | number)} If the duration argument is omitted, the current
      * duration is returned, otherwise the [biPartite class object]{@link biPartite} is returned.
      * @example <caption>biPartite.duration method example</caption>
      * new biPartite(data, container)

@@ -8,9 +8,8 @@ import {default as d3} from './d3Build';
 /**
  * @function getTransitions
  * @desc Retrieves three D3 transition objects for use in interaction and graph rendering.
- * @param {Object} t D3 transition object for bars and edges.
- * @param {Object} t1 D3 transition object for first half of label transition.
- * @param {Object} t2 D3 transition object for second half of label transition.
+ * @param {number} duration The transition duration in milliseconds. **Default**: 750..
+ * @param {string} name A unique name for the transitions.
  * @returns {Array} An Array with three D3 transition objects.
  */
 export function getTransitions(duration, name) {

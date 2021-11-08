@@ -1,10 +1,5 @@
-// import {jest} from '@jest/globals';
-// import {bpMap} from '../../src/bpMap.js'
-
 require ('jest');
 var bpMap = require('../src/bpMap');
-console.log (typeof bpMap);
-// waiting for node.js  to be able to handle named exports
 
 test.each ([
     {

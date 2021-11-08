@@ -8,6 +8,54 @@ import {default as glb} from './globals';
 import {getFont} from './font';
 
 /**
+ * @function insertPseudoDiv
+ * @desc Inserts a temporary HTML div element into the DOM for use in determining
+ * the width and height of text.
+ * @param {string} text The text to be evaluated.
+ * @param {string} font A CSS font specification.
+ * @returns {HTML.div} A dive element formatted with the specified font and
+ * containing a text node with the supplied text.
+ */
+export function insertPseudoDiv(text) {
+
+    let pseudoDiv = document.createElement('div');
+
+    pseudoDiv.style.visibility = 'hidden';
+    pseudoDiv.style.position = 'absolute';
+    pseudoDiv.style.display = 'inline-block';
+    document.body.insertBefore(pseudoDiv, document.body.firstChild);   
+    
+    return pseudoDiv;
+}
+
+/**
+ * @function checkCSS
+ * @desc Validates whether a CSS value is valid. It does this by setting the value in a
+ * temporary div element and the checking to see if the style has indeed changed based
+ * on the input style.
+ * @param {string} rule The CSS rule (e.g., padding, border-radius, etc.) being checked.
+ * @param {string} style The style to validate.
+ * @returns {boolean} True if the CSS is valid, false otherwise - logs an error to the console
+ * @since v2.0.0
+ */
+export function checkCSS (rule, style) {
+    if (style == 'initial') { return true; }; //always valid
+    let result;
+    let pseudoDiv = insertPseudoDiv();
+    pseudoDiv.style[rule] = 'initial';
+    pseudoDiv.style[rule] = style;
+    if (pseudoDiv.style[rule] == 'initial') {
+        console.log(`Option setting error. ${style} is not a valid style for ${rule}`);
+        result = false;
+    } else {
+        result = true;
+    };
+
+    pseudoDiv.remove()
+    return result;
+}
+
+/**
  * @function formatPercent
  * @desc Takes a number and returns a string formatted as a percentage.
  * @param {number} value The number to be transformed.
@@ -17,6 +65,31 @@ export function formatPercent (value) {
 
     return value < 0.01 ? '< 1%' : `${parseFloat(value * 100).toFixed(0)}%`
 }
+
+/**
+ * @function overlap
+ * @desc Determines if two bars overlap. Used to determine the optimal color
+ * for secondary percentage labels.
+ * @param {Object} bar0 A sub bar object containing key/value pairs for the x (number), y (number),
+ * height (number), width (number), percent (number), value (number), index (string), part (string), 
+ * primary (string), and secondary (string) of each sub bar.
+ * @param {Object} bar1 A sub bar object containing key/value pairs for the x (number), y (number),
+ * height (number), width (number), percent (number), value (number), index (string), part (string), 
+ * primary (string), and secondary (string) of each sub bar.
+ * @returns {boolean} True or false.
+ * @since v2.0.0
+ */
+export function overlap(bar0, bar1) {
+    if (bar0.width <=1e-5 || bar0.height <= 1e-5 || bar1.width <=1e-5 || bar1.height <= 1e-5) return false;
+
+    // If one rectangle is on left side of other
+    if (bar0.x >= bar1.x + bar1.width || bar1.x >= bar0.x + bar0.width) return false;
+ 
+    // If one rectangle is above other
+    if (bar0.y + bar0.height <= bar1.y || bar1.y + bar1.height <= bar0.y) return false;
+ 
+    return true;
+};
 
 /**
  * @function getMargins
@@ -63,10 +136,12 @@ export function graphSize () {
     if (glb.graph.orient() == 'vertical') {
         width = glb.graph.container().getBoundingClientRect().width - margins.primary - margins.secondary - (labelMargin * 2) - (minWidth / 2);
         d3.select('#svgG').attr('transform', `translate(${margins.primary + labelOffset}, ${0})`);
+        d3.select('percentBlackG').attr('transform', `translate(${margins.primary + labelOffset}, ${0})`);
         height = glb.graph.container().getBoundingClientRect().height;
     } else {
         width = glb.graph.container().getBoundingClientRect().width;
         d3.select('#svgG').attr('transform', `translate(0, ${margins.primary + labelOffset})`);
+        d3.select('percentBlackG').attr('transform', `translate(0, ${margins.primary + labelOffset})`);
         height = glb.graph.container().getBoundingClientRect().height - margins.primary - margins.secondary - (labelMargin * 2) - (minWidth / 2);
     };
 
@@ -98,7 +173,7 @@ export function collapsePath(path, origin = 'left') {
 }
 
 /**
- * @function buildArray
+ * @function initArray
  * @desc Creates a one-dimensional array of size n filled with zeros.
  * @param {number} n The size of the array
  * @returns {Array} The requested array.
@@ -188,7 +263,7 @@ export function fw (d) {return 2 * d.width};
 
 /**
  * @function fh
- * @desc Computes theheight for bars and sub bar rectangles.
+ * @desc Computes the height for bars and sub bar rectangles.
  * @param {Object} d The datum from a single bar or sub bar containing key/value
  * pairs for the height (number), width (number), x (number), y (number), value
  * (number), percent (number), key (string), and part (string), and value (number).

@@ -1,7 +1,6 @@
 node_modules
 .npmignore
 *.sublime*
-test/*.json
-test/*.html
+test/src
 *OLD
 coverage

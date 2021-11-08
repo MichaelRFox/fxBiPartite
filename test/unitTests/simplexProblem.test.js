@@ -1,5 +1,3 @@
-// import {jest} from '@jest/globals';
-// import {buildSimplexProblem} from '../../src/simplexProblem.js'
 require('jest');
 var simplexProblem = require('../src/simplexProblem')
 

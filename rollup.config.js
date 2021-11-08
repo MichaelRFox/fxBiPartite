@@ -3,14 +3,14 @@ import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 
   var config = {
-    input: process.env.BUILD == 'iife' ? 'dist/fxBiPartite.js' : 'src/index.js',
+    input: process.env.BUILD == 'umd' ? 'dist/fxBiPartite.js' : 'src/index.js',
     output: {
       name: 'biPartite',
       // file: 'dist/fxBiPartite.js',
       strict: true,
       format: process.env.BUILD 
     },
-    plugins: process.env.BUILD == 'iife' ?
+    plugins: process.env.BUILD == 'umd' ?
     [ nodeResolve(),
       commonjs(),
       babel({'babelHelpers': 'bundled'})
@@ -24,6 +24,7 @@ import babel from '@rollup/plugin-babel';
     config.output.dir = './test/src';
     config.output.preserveModules = true;
     config.output.preserveModulesRoot = 'src';
+    config.output.exports = 'auto';
   } else {
       config.output.file = 'dist/fxBiPartite.js';
   };

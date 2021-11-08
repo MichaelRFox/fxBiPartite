@@ -171,16 +171,16 @@
  * fxBipartite uses several CSS styles which you may customize either in-line in an HTML file or in a separate CSS style sheet.
  * 
  * - .biPartite: styles the svg *g* element which contains the bipartite graph. There is probably no need to style this element.
+ * 
  * - .biPartitle-mainBar: styles the container for all nodes. The svg *rect* elements generally don't need any styling.
- * - .biPartite-subBar: styles the nodes. The fill color for these svg *rect* elements are controlled through the
- * [biPartite.fillColors()]{@link biPartite#fillColors} method.
- * - .biPartite-edge: styles the edges. The fill color for these svg *path* elements are controlled through the
- * [biPartite.fillColors()]{@link biPartite#fillColors} method, and their edge opacity is controlled through the
- * [biPartite.edgeOpacity()]{@link biPartite#edgeOpacity) method.
- * - .biPartite-label: styles the text element for the node labels. One may wish to customize the label size,
- * font, fill, etc., by using this CSS style.
- * - .biPartite-percentage: styles the percentage labels for each node. Similar to the biPartite-label class,
- * one may wish to customize the percentage size, font, fill, etc., by using this CSS style.
+ * 
+ * - .biPartite-subBar: styles the nodes. The fill color for these svg *rect* elements are controlled through the [biPartite.fillColors()]{@link biPartite#fillColors} method.
+ * 
+ * - .biPartite-edge: styles the edges. The fill color for these svg *path* elements are controlled through the [biPartite.fillColors()]{@link biPartite#fillColors} method, and their edge opacity is controlled through the [biPartite.edgeOpacity()]{@link biPartite#edgeOpacity} method.
+ * 
+ * - .biPartite-label: styles the text element for the node labels. One may wish to customize the label size, font, fill, etc., by using this CSS style.
+ * 
+ * - .biPartite-percentage: styles the percentage labels for each node. Similar to the biPartite-label class, one may wish to customize the percentage size, font, fill, etc., by using this CSS style.
  * 
  * ```css
  * body {
@@ -192,12 +192,10 @@
  * }
  * 
  * .biPartite-percentage, .biPartite-label {
- *      user-select: none;
  *      font-family: tahoma, sans;
  * }
  *     
  * .biPartite-percentage {
- *      text-anchor: middle;
  *      font-size: 1em;
  * }
  * .biPartite-label {
@@ -217,5 +215,5 @@
  * 
  */
 
-// import {biPartite} from './biPartite.js';
-export {biPartite} from './biPartite.js';
+import {biPartite} from './biPartite.js';
+export default biPartite;
